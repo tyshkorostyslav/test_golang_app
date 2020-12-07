@@ -1,16 +1,14 @@
 package controllers
 
 import (
-	"image/jpeg"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nfnt/resize"
 	repositories "github.com/tyshkorostyslav/test_golang_app/repositories"
+	utils "github.com/tyshkorostyslav/test_golang_app/utils"
 	"gorm.io/gorm"
 )
 
@@ -126,32 +124,6 @@ func SecondResizePicture(c *gin.Context) {
 
 }
 
-func Resize(image string, height uint, width uint, resized_file_name string) (err error) {
-	file, err := os.Open(image)
-	if err != nil {
-		return err
-	}
-
-	// decode jpeg into image.Image
-	img, err := jpeg.Decode(file)
-	if err != nil {
-		return err
-	}
-	file.Close()
-
-	// and preserve aspect ratio
-	m := resize.Resize(width, height, img, resize.Lanczos3)
-	out, err := os.Create(resized_file_name)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	// write new image to file
-	jpeg.Encode(out, m, nil)
-	return nil
-}
-
 func CreateResizeObjInDB(db *gorm.DB, dst string, id string, height_string string, width_string string, second_resize bool) (resized_url string, err error) {
 
 	height, err := strconv.Atoi(height_string)
@@ -169,7 +141,7 @@ func CreateResizeObjInDB(db *gorm.DB, dst string, id string, height_string strin
 		resized_url = "resized_" + resized_url
 	}
 	resized_url = "./upload/" + resized_url
-	Resize(dst, uint(height), uint(width), resized_url)
+	utils.Resize(dst, uint(height), uint(width), resized_url)
 
 	user_id, err := strconv.Atoi(id)
 	if err != nil {
