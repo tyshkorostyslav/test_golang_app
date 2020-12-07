@@ -10,14 +10,14 @@ import (
 
 func InitDb() *gorm.DB {
 	// Openning file
-	db, err := gorm.Open("sqlite3", "./data.db")
-	// Display SQL queries
-	db.LogMode(true)
+	db, err := gorm.Open("sqlite3", "../data.db")
 
 	// Error
 	if err != nil {
 		panic(err)
 	}
+	// Display SQL queries
+	db.LogMode(true)
 	// Creating the table
 	if !db.HasTable(&repositories.User{}) {
 		db.CreateTable(&repositories.User{})
