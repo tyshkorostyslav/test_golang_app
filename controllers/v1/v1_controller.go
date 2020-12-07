@@ -4,11 +4,10 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	repositories "github.com/tyshkorostyslav/test_golang_app/repositories"
-	utils "github.com/tyshkorostyslav/test_golang_app/utils"
+	services "github.com/tyshkorostyslav/test_golang_app/services"
 	"gorm.io/gorm"
 )
 
@@ -67,7 +66,7 @@ func ResizePicture(c *gin.Context) {
 	// Upload the file to specific dst.
 	c.SaveUploadedFile(file, dst)
 
-	resized_url, err := CreateResizeObjInDB(
+	resized_url, err := services.CreateResizeObjInDB(
 		db,
 		dst,
 		id,
@@ -102,7 +101,7 @@ func SecondResizePicture(c *gin.Context) {
 	db.Where(map[string]interface{}{"user_id": id, "url": dst}).Find(&resizingObjs)
 	if len(resizingObjs) == 0 {
 		dst := "./upload/" + img_id
-		resized_url, err := CreateResizeObjInDB(
+		resized_url, err := services.CreateResizeObjInDB(
 			db,
 			dst,
 			id,
@@ -122,43 +121,4 @@ func SecondResizePicture(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Out of resizing limit"})
 	}
 
-}
-
-func CreateResizeObjInDB(db *gorm.DB, dst string, id string, height_string string, width_string string, second_resize bool) (resized_url string, err error) {
-
-	height, err := strconv.Atoi(height_string)
-	if err != nil {
-		return "", err
-	}
-	width, err := strconv.Atoi(width_string)
-	if err != nil {
-		return "", err
-	}
-	dst_split := strings.Split(dst, "/")
-
-	resized_url = "resized_" + dst_split[len(dst_split)-1]
-	if second_resize {
-		resized_url = "resized_" + resized_url
-	}
-	resized_url = "./upload/" + resized_url
-	utils.Resize(dst, uint(height), uint(width), resized_url)
-
-	user_id, err := strconv.Atoi(id)
-	if err != nil {
-		return "", err
-	}
-
-	input := repositories.ResizingObj{
-		OriginalURL: dst,
-		ResizedURL:  resized_url,
-		UserID:      user_id,
-		ResizeParams: repositories.ResizeParameters{
-			Height: uint(height),
-			Width:  uint(width),
-		},
-	}
-
-	db.Create(&input)
-
-	return resized_url, nil
 }
