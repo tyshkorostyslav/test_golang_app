@@ -4,13 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/jinzhu/gorm"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 	repositories "github.com/tyshkorostyslav/test_golang_app/repositories"
 )
 
-func InitDb() *gorm.DB {
+func InitDb(db_user string, pword string, db_addr string, db_name string) *gorm.DB {
 	// Openning file
-	db, err := gorm.Open("sqlite3", "./db/data.db")
+	dsn := db_user + ":" + pword + "@" + db_addr + "/" + db_name + "?charset=utf8&parseTime=True&loc=Local"
+	db, err := gorm.Open("mysql", dsn)
 
 	// Error
 	if err != nil {

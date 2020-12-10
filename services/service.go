@@ -4,9 +4,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/jinzhu/gorm"
 	"github.com/tyshkorostyslav/test_golang_app/repositories"
 	"github.com/tyshkorostyslav/test_golang_app/utils"
-	"gorm.io/gorm"
 )
 
 func CreateResizeObjInDB(db *gorm.DB, dst string, id string, height_string string, width_string string, second_resize bool) (resized_url string, err error) {

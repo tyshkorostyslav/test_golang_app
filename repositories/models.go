@@ -1,6 +1,6 @@
 package repositories
 
-import "gorm.io/gorm"
+import "github.com/jinzhu/gorm"
 
 type ResizingObj struct {
 	gorm.Model

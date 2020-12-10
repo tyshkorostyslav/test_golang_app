@@ -6,9 +6,9 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	repositories "github.com/tyshkorostyslav/test_golang_app/repositories"
 	services "github.com/tyshkorostyslav/test_golang_app/services"
-	"gorm.io/gorm"
 )
 
 func CreateUser(c *gin.Context) {

@@ -7,14 +7,22 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
-	controllers "github.com/tyshkorostyslav/test_golang_app/controllers"
+	controllers "github.com/tyshkorostyslav/test_golang_app/controllers/v1"
 	database "github.com/tyshkorostyslav/test_golang_app/db"
 )
 
 var router *gin.Engine
 
 func main() {
-	db := database.InitDb()
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	db_user := os.Getenv("DB_USER")
+	pword := os.Getenv("DB_PWORD")
+	db_addr := os.Getenv("DB_ADDR")
+	db_name := os.Getenv("DB_NAME")
+	db := database.InitDb(db_user, pword, db_addr, db_name)
 	defer db.Close()
 
 	router = gin.Default()
@@ -29,10 +37,7 @@ func main() {
 		v1.POST("/second_resize/:id", controllers.SecondResizePicture)
 		v1.GET("/all/:id", controllers.GetRequestAllResizeObjs)
 	}
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+
 	port := os.Getenv("PORT")
 
 	// Start serving the application
